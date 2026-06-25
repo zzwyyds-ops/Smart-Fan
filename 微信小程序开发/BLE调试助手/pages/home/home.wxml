@@ -1,0 +1,126 @@
+<view class="home-page">
+  <view class="console-shell">
+    <view class="topbar">
+      <view class="top-copy">
+        <text class="eyebrow">Smart Device Hub</text>
+        <text class="title">智能风扇中控台</text>
+        <text class="subtitle">连接状态、环境信息与控制入口集中在这里</text>
+      </view>
+      <view class="status-pill {{dashboard.connected ? 'online' : 'offline'}}">
+        <view class="status-dot"></view>
+        <text>{{dashboard.connected ? "BLE 已连接" : "等待连接"}}</text>
+      </view>
+    </view>
+
+    <view class="hero-stage">
+      <view class="halo halo-a"></view>
+      <view class="halo halo-b"></view>
+
+      <view class="floating-card temp-card">
+        <text class="floating-label">温度</text>
+        <text class="floating-value">{{dashboard.temperature}}<text class="floating-unit">℃</text></text>
+      </view>
+
+      <view class="floating-card humidity-card">
+        <text class="floating-label">湿度</text>
+        <text class="floating-value">{{dashboard.humidity}}<text class="floating-unit">%</text></text>
+      </view>
+
+      <view class="floating-card mode-card">
+        <text class="floating-label">模式</text>
+        <text class="floating-text">{{dashboard.currentModeLabel}}</text>
+        <text class="floating-sub">{{sceneText}}</text>
+      </view>
+
+      <view class="floating-card timer-card">
+        <text class="floating-label">定时</text>
+        <text class="floating-text">{{timerText}}</text>
+      </view>
+
+      <view class="home-fan">
+        <view class="fan-shadow"></view>
+        <view class="fan-head">
+          <view class="fan-ring outer"></view>
+          <view class="fan-ring inner"></view>
+          <view class="fan-cage">
+            <view class="cage-line line-1"></view>
+            <view class="cage-line line-2"></view>
+            <view class="cage-line line-3"></view>
+            <view class="cage-line line-4"></view>
+          </view>
+          <view class="fan-rotor {{fanSpeedClass}}">
+            <view class="fan-blade blade-1"></view>
+            <view class="fan-blade blade-2"></view>
+            <view class="fan-blade blade-3"></view>
+          </view>
+          <view class="fan-hub"></view>
+        </view>
+        <view class="fan-neck"></view>
+        <view class="fan-stand"></view>
+        <view class="fan-base">
+          <view class="base-indicator {{dashboard.connected ? 'on' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="meta-panel">
+      <view class="device-block">
+        <text class="device-name">{{dashboard.deviceName}}</text>
+        <text class="device-sub">{{dashboard.fanOn ? "风扇运行中" : "风扇待机中"}}</text>
+      </view>
+      <view class="meta-chip">
+        <text class="meta-chip-label">当前风速</text>
+        <text class="meta-chip-value">{{speedText}}</text>
+      </view>
+    </view>
+
+    <view class="speed-panel">
+      <view class="speed-panel-copy">
+        <text class="speed-panel-label">风扇速度</text>
+        <text class="speed-panel-value">{{speedValueText}}</text>
+        <text class="speed-panel-detail">{{speedDetailText}}</text>
+      </view>
+      <view class="speed-panel-meter">
+        <text class="speed-panel-meter-label">速度强度</text>
+        <view class="speed-panel-track">
+          <view class="speed-panel-fill" style="width: {{speedPercent}}%;"></view>
+        </view>
+        <text class="speed-panel-meter-text">{{speedText}}</text>
+      </view>
+    </view>
+
+    <view class="action-grid">
+      <view class="action-card debug-card" bindtap="goDebug">
+        <view class="action-icon debug-icon">
+          <view class="chip-line line-a"></view>
+          <view class="chip-line line-b"></view>
+          <view class="chip-dot dot-a"></view>
+          <view class="chip-dot dot-b"></view>
+        </view>
+        <view class="action-content">
+          <text class="action-title">调试入口</text>
+          <text class="action-desc">扫描、连接、字节收发与 HEX 调试</text>
+        </view>
+      </view>
+
+      <view class="action-card fan-card" bindtap="goFan">
+        <view class="action-icon fan-icon">
+          <view class="mini-rotor {{fanSpeedClass}}">
+            <view class="mini-blade blade-a"></view>
+            <view class="mini-blade blade-b"></view>
+            <view class="mini-blade blade-c"></view>
+          </view>
+          <view class="mini-hub"></view>
+        </view>
+        <view class="action-content">
+          <text class="action-title">风扇控制</text>
+          <text class="action-desc">开关、场景、风速、智能模式与定时</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer">
+    <text>作者：张志伟</text>
+  </view>
+</view>

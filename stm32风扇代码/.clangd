@@ -1,0 +1,12 @@
+CompileFlags:
+  Add:
+    - -xc
+    - -std=c99
+    - -DSTM32F10X_MD
+    - -DUSE_STDPERIPH_DRIVER
+    - -I./Start
+    - -I./Library
+    - -I./User
+    - -I./System
+    - -I./Hardware
+    - -I./.cmsis/include

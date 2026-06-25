@@ -1,0 +1,222 @@
+<view class="fan-page">
+  <view class="connection-panel">
+    <view class="status-block">
+      <text class="status-title">{{connected ? deviceName : "未连接风扇"}}</text>
+      <text class="status-sub">{{connected ? "BLE 已连接" : bleReady ? "蓝牙已就绪" : "请打开手机蓝牙"}}</text>
+    </view>
+    <button wx:if="{{connected}}" class="small-btn ghost" bindtap="disconnect">断开</button>
+    <button wx:else class="small-btn" bindtap="toggleScan">{{scanning ? "停止" : "扫描"}}</button>
+  </view>
+
+  <scroll-view wx:if="{{!connected}}" class="device-list" scroll-y>
+    <view
+      wx:for="{{devices}}"
+      wx:key="deviceId"
+      class="device-card"
+      data-device="{{item}}"
+      bindtap="connectDevice"
+    >
+      <view>
+        <text class="device-name">{{item.name || item.localName || "未知设备"}}</text>
+        <text class="device-id">{{item.deviceId}}</text>
+      </view>
+      <text class="device-rssi">{{item.RSSI}} dBm</text>
+    </view>
+    <view wx:if="{{devices.length === 0}}" class="empty-device">
+      <text>{{scanning ? "正在搜索设备..." : "点击扫描查找 BLE 风扇模块"}}</text>
+    </view>
+  </scroll-view>
+
+  <block wx:if="{{connected}}">
+    <view class="metric-grid">
+      <view class="metric-card">
+        <text class="metric-label">温度</text>
+        <text class="metric-value">{{temperature}}<text class="metric-unit">℃</text></text>
+      </view>
+      <view class="metric-card">
+        <text class="metric-label">湿度</text>
+        <text class="metric-value">{{humidity}}<text class="metric-unit">%</text></text>
+      </view>
+      <view class="metric-card">
+        <text class="metric-label">速度</text>
+        <text class="metric-value">{{speed}}</text>
+      </view>
+    </view>
+
+    <view class="fan-stage {{fanOn ? 'stage-on' : 'stage-off'}}">
+      <view class="stage-glow"></view>
+      <view class="fan-machine">
+        <view class="fan-head">
+          <view class="fan-back-ring"></view>
+          <view class="fan-cage">
+            <view class="cage-line line-1"></view>
+            <view class="cage-line line-2"></view>
+            <view class="cage-line line-3"></view>
+            <view class="cage-line line-4"></view>
+          </view>
+          <view class="fan-rotor {{fanSpeedClass}}">
+            <view class="fan-blade blade-1"></view>
+            <view class="fan-blade blade-2"></view>
+            <view class="fan-blade blade-3"></view>
+          </view>
+          <view class="fan-hub"></view>
+          <view class="fan-front-ring"></view>
+        </view>
+        <view class="fan-neck"></view>
+        <view class="fan-stand"></view>
+        <view class="fan-base">
+          <view class="base-light"></view>
+        </view>
+      </view>
+      <view class="fan-stage-info">
+        <text class="stage-label">当前风速</text>
+        <text class="stage-value">{{fanStatusText}}</text>
+        <view class="speed-meter">
+          <view
+            wx:for="{{speedLevels}}"
+            wx:key="level"
+            class="meter-dot {{fanOn && speedLevel >= item.level ? 'on' : ''}}"
+          ></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="control-section">
+      <view class="section-head">
+        <text class="section-title">总开关</text>
+        <text class="section-extra">{{fanOn ? "运行中" : "已关闭"}}</text>
+      </view>
+      <button class="power-btn {{fanOn ? 'on' : ''}}" bindtap="togglePower">
+        {{fanOn ? "关闭风扇 01h" : "打开风扇 00h"}}
+      </button>
+    </view>
+
+    <view class="control-section scene-section">
+      <view class="section-head">
+        <text class="section-title">场景模式</text>
+        <text wx:if="{{sceneBusy}}" class="section-extra">应用中</text>
+        <text wx:elif="{{currentSceneName}}" class="section-extra">{{currentSceneName}}</text>
+        <text wx:else class="section-extra">未选择</text>
+      </view>
+      <view class="scene-grid">
+        <view
+          wx:for="{{sceneOptions}}"
+          wx:key="key"
+          class="scene-card {{currentSceneKey === item.key ? 'active' : ''}} {{sceneBusy ? 'busy' : ''}}"
+          data-scene="{{item.key}}"
+          bindtap="applyScene"
+        >
+          <text class="scene-name">{{item.name}}</text>
+          <text class="scene-detail">{{item.detail}}</text>
+          <text class="scene-tag">{{item.tag}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="control-section timer-section">
+      <view class="section-head">
+        <text class="section-title">定时关闭</text>
+        <text class="section-extra">{{timerDisplay}}</text>
+      </view>
+      <view class="timer-status {{timerActive ? 'active' : ''}}">
+        <text class="timer-status-label">{{timerActive ? timerTargetText : "未开启定时"}}</text>
+      </view>
+      <view class="timer-grid">
+        <view class="timer-card {{timerType === 'countdown' ? 'active' : ''}}">
+          <text class="timer-label">倒计时</text>
+          <view class="timer-input-row">
+            <input
+              class="timer-input"
+              type="number"
+              value="{{countdownMinutes}}"
+              maxlength="3"
+              bindinput="bindCountdownInput"
+            />
+            <text class="timer-unit">分钟</text>
+          </view>
+          <button class="timer-action" bindtap="startCountdownTimer">开始</button>
+        </view>
+
+        <view class="timer-card {{timerType === 'clock' ? 'active' : ''}}">
+          <text class="timer-label">定点</text>
+          <picker mode="time" value="{{closeAtTime}}" bindchange="bindCloseAtTime">
+            <view class="time-picker">
+              <text>{{closeAtTime}}</text>
+            </view>
+          </picker>
+          <button class="timer-action" bindtap="startCloseAtTimer">开始</button>
+        </view>
+      </view>
+      <button
+        wx:if="{{timerActive}}"
+        class="timer-cancel"
+        bindtap="cancelFanTimer"
+      >
+        取消定时
+      </button>
+    </view>
+
+    <view class="control-section">
+      <view class="section-head">
+        <text class="section-title">模式切换</text>
+        <text class="section-extra">{{currentMode}}</text>
+      </view>
+      <view class="mode-grid">
+        <view
+          wx:for="{{modes}}"
+          wx:key="key"
+          class="mode-chip {{currentMode === item.key ? 'active' : ''}}"
+          data-mode="{{item.key}}"
+          bindtap="selectMode"
+        >
+          <text>{{item.name}}</text>
+          <text>{{item.command}}h</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="control-section">
+      <view class="section-head">
+        <text class="section-title">风速控制</text>
+        <text class="section-extra">{{speedLevel}}档</text>
+      </view>
+      <view class="speed-grid">
+        <view
+          wx:for="{{speedLevels}}"
+          wx:key="level"
+          class="speed-btn {{speedLevel === item.level ? 'active' : ''}} {{smartMode ? 'disabled' : ''}}"
+          data-level="{{item.level}}"
+          bindtap="selectSpeed"
+        >
+          <text>{{item.level}}档</text>
+          <text>{{item.command}}h</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="control-section smart">
+      <view class="section-head">
+        <text class="section-title">智能模式</text>
+        <switch checked="{{smartMode}}" bindchange="toggleSmartMode" color="#0b8f78" />
+      </view>
+      <text class="smart-desc">根据 STM32 回传的温度和湿度自动选择 1-5 档，并发送 05h-09h。</text>
+    </view>
+
+    <view class="telemetry">
+      <text class="section-title">最新回传</text>
+      <text class="telemetry-text">{{telemetryText}}</text>
+    </view>
+
+    <view class="log-list">
+      <text class="section-title">操作日志</text>
+      <view wx:for="{{logs}}" wx:key="time" class="log-row">
+        <text class="log-time">{{item.time}}</text>
+        <text class="log-text">{{item.text}}</text>
+      </view>
+    </view>
+  </block>
+
+  <view class="author-footer">
+    <text class="author-text">作者：张志伟</text>
+  </view>
+</view>

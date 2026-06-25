@@ -1,0 +1,21 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/fan/fan",
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "智能风扇控制",
+    "navigationBarBackgroundColor": "#1a1a2e",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5",
+    "backgroundTextStyle": "dark"
+  },
+  "permission": {
+    "scope.bluetooth": {
+      "desc": "需要使用蓝牙来搜索、连接并收发附近蓝牙设备的数据"
+    }
+  },
+  "requiredBackgroundModes": ["bluetooth"],
+  "sitemapLocation": "sitemap.json"
+}
