@@ -1,0 +1,13 @@
+# STM32 build outputs
+stm32风扇代码/build/
+stm32风扇代码/Listings/
+stm32风扇代码/Objects/
+
+# STM32 local IDE files
+stm32风扇代码/.vscode/keil-assistant.log
+stm32风扇代码/.vscode/uv4.log.lock
+stm32风扇代码/project.uvguix.*
+
+# WeChat Mini Program local config
+微信小程序开发/project.private.config.json
+微信小程序开发/BLE调试助手/project.private.config.json
